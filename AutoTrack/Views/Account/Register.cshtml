@@ -1,0 +1,54 @@
+@model AutoTrack.ViewModels.RegisterViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Sign Up";
+}
+<div class="auth-form-container">
+    <div class="auth-form-title">Sign Up</div>
+    <div class="auth-form-subtitle">Please fill your information below</div>
+    <form asp-action="Register" method="post">
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" placeholder="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" placeholder="Password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ConfirmPassword" class="form-label"></label>
+            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Role" class="form-label">Role</label>
+            <select asp-for="Role" class="form-control">
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-auth w-100">Next</button>
+    </form>
+    <div class="mt-4 text-center">
+        <span>Already have an account?</span>
+        <a asp-action="Login" class="auth-link">Login to your account</a>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

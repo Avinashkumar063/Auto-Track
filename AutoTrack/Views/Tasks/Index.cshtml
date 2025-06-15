@@ -1,0 +1,30 @@
+﻿<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Assigned To</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.AssignedTo?.UserName</td>
+                <td>@task.DueDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge bg-@(task.Status == "Completed" ? "success" : task.Status == "InProgress" ? "warning" : "secondary")">
+                        @task.Status
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

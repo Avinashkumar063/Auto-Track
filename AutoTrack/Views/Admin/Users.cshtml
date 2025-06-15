@@ -1,0 +1,31 @@
+﻿  @model IEnumerable<AutoTrack.Models.ApplicationUser>
+  @using Microsoft.AspNetCore.Identity
+
+<h2>User Management</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Assign Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>
+                    <form asp-action="AssignRole" method="post" style="display:inline;">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="role" class="form-select form-select-sm d-inline w-auto">
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Employee">Employee</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

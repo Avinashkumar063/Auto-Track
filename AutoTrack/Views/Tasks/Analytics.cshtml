@@ -1,0 +1,14 @@
+﻿<canvas id="taskStatusChart"></canvas>
+<script>
+    var ctx = document.getElementById('taskStatusChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.StatusLabels)),
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(ViewBag.StatusCounts)),
+                backgroundColor: ['#28a745', '#ffc107', '#6c757d']
+            }]
+        }
+    });
+</script>

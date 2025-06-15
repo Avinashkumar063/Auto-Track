@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AutoTrack</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        /* Overlap the form slightly over the image for a modern look */
+        @@media (min-width: 768px) {
+            .auth-form-overlap
+
+        {
+            margin-left: -140px;
+            z-index: 2;
+        }
+
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid min-vh-100 d-flex align-items-center">
+        <div class="row w-100" style="min-height: 80vh;">
+            <!-- Left: Image -->
+            <div class="col-md-6 d-none d-md-flex align-items-center justify-content-start p-0">
+                <div class="auth-left"></div>
+            </div>
+            <!-- Right: Form -->
+            <div class="col-md-6 d-flex align-items-center justify-content-end auth-form-overlap">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

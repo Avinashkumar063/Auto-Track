@@ -1,0 +1,35 @@
+@model AutoTrack.ViewModels.LoginViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Login";
+}
+<div class="auth-form-container shadow-lg rounded-4 p-4 bg-white">
+    <div class="auth-form-title mb-2">Login</div>
+    <div class="auth-form-subtitle mb-4">Please select your account</div>
+    <form asp-action="Login" method="post" autocomplete="off">
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-semibold"></label>
+            <input asp-for="Email" class="form-control form-control-lg" placeholder="Email" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label fw-semibold"></label>
+            <input asp-for="Password" class="form-control form-control-lg" placeholder="Password" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+        <div class="mb-4 form-check">
+            <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
+            <label asp-for="RememberMe" class="form-check-label" for="rememberMeCheck"></label>
+        </div>
+        <button type="submit" class="btn-auth">Login</button>
+    </form>
+    <div class="mt-4 text-center">
+        <span>Don't have an account?</span>
+        <a asp-action="Register" class="auth-link">Sign up</a>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
