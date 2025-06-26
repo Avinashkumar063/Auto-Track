@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTrack", "AutoTrack.csproj", "{6789E3E0-D7D7-EA4B-615A-0DF72C22402A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6789E3E0-D7D7-EA4B-615A-0DF72C22402A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6789E3E0-D7D7-EA4B-615A-0DF72C22402A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6789E3E0-D7D7-EA4B-615A-0DF72C22402A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6789E3E0-D7D7-EA4B-615A-0DF72C22402A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18B01422-35F1-45BF-8B9D-BB50E6956BB9}
+	EndGlobalSection
+EndGlobal

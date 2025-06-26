@@ -3,6 +3,7 @@ using AutoTrack.Hubs;
 using AutoTrack.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -24,13 +25,11 @@ namespace AutoTrack.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var tasks = await _context.TaskItems
-                .Include(t => t.AssignedTo)
-                .ToListAsync();
+            var tasks = await _context.TaskItems.Include(t => t.AssignedTo).ToListAsync();
             return View(tasks);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize]
         public IActionResult Create()
         {
             ViewBag.Users = _context.Users.ToList();
@@ -38,15 +37,28 @@ namespace AutoTrack.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize]
         public async Task<IActionResult> Create(TaskItem task)
         {
             if (ModelState.IsValid)
             {
+                task.Status = "Pending";
+                task.CreatedAt = DateTime.UtcNow;
+                task.CreatedBy = User.Identity.Name; // Set the creator's username or email
                 _context.Add(task);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("ReceiveTaskUpdate", task.Id.ToString(), task.Status);
                 return RedirectToAction(nameof(Index));
+            }
+
+            // Log validation errors for debugging
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ModelState error for {key}: {error.ErrorMessage}");
+                }
             }
 
             ViewBag.Users = _context.Users.ToList();
@@ -61,11 +73,12 @@ namespace AutoTrack.Controllers
             {
                 return NotFound();
             }
-
             ViewBag.Users = _context.Users.ToList();
+            ViewBag.Priorities = new SelectList(new[] { "Low", "Medium", "High" }, task.Priority);
             return View(task);
         }
 
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         //[Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(int id, TaskItem task)
@@ -74,7 +87,6 @@ namespace AutoTrack.Controllers
             {
                 return BadRequest();
             }
-
             if (ModelState.IsValid)
             {
                 try
@@ -94,15 +106,23 @@ namespace AutoTrack.Controllers
                         throw;
                     }
                 }
-
                 return RedirectToAction(nameof(Index));
             }
-
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    System.Diagnostics.Debug.WriteLine($"ModelState error for {key}: {error.ErrorMessage}");
+                }
+            }
             ViewBag.Users = _context.Users.ToList();
+            ViewBag.Priorities = new SelectList(new[] { "Low", "Medium", "High" }, task.Priority);
             return View(task);
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
+
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Delete(int id)
         {
             var task = await _context.TaskItems.FindAsync(id);
@@ -115,7 +135,7 @@ namespace AutoTrack.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var task = await _context.TaskItems.FindAsync(id);
@@ -141,6 +161,16 @@ namespace AutoTrack.Controllers
 
             ViewBag.StatusData = statusCounts;
             return View();
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var tasks = await _context.TaskItems
+                .Include(t => t.AssignedTo)
+                .Where(t => t.AssignedToId == userId)
+                .ToListAsync();
+            return View(tasks);
         }
     }
 }

@@ -1,0 +1,47 @@
+@model IEnumerable<AutoTrack.Models.TaskItem>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2>All Tasks (Dashboard)</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Priority</th>
+            <th>Assigned To</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>CreatedBy</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.Description</td>
+                <td>@task.Priority</td>
+                <td>
+                    @if (task.AssignedTo != null)
+                    {
+                        @($"{task.AssignedTo.FirstName} {task.AssignedTo.LastName} ({task.AssignedTo.Email})")
+                    }
+                    else
+                    {
+                        <span class="text-muted">Unassigned</span>
+                    }
+                </td>
+                <td>@task.DueDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge bg-@(task.Status == "Completed" ? "success" : task.Status == "InProgress" ? "warning" : "secondary")">
+                        @task.Status
+                    </span>
+                </td>
+                <td>@task.CreatedBy</td>
+            </tr>
+        }
+    </tbody>
+</table>

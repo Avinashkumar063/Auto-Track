@@ -25,6 +25,6 @@ namespace AutoTrack.ViewModels
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        public string Role { get; set; }
+        //public string Role { get; set; }
     }
 }

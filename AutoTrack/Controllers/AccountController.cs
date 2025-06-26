@@ -43,10 +43,10 @@ namespace AutoTrack.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Assign role
-                    if (!string.IsNullOrEmpty(model.Role) && await _roleManager.RoleExistsAsync(model.Role))
+                    // Always assign the default role "Employee"
+                    if (await _roleManager.RoleExistsAsync("Employee"))
                     {
-                        await _userManager.AddToRoleAsync(user, model.Role);
+                        await _userManager.AddToRoleAsync(user, "Employee");
                     }
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
@@ -90,11 +90,11 @@ namespace AutoTrack.Controllers
                         return Redirect(returnUrl);
                     }
                     if (roles.Contains("Admin"))
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Dashboard", "Tasks");
                     else if (roles.Contains("User"))
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Dashboard", "Tasks");
                     // Add more role-based redirects as needed
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
                 else
                 {

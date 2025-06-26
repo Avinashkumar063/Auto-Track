@@ -41,11 +41,22 @@
             {
                 foreach (var user in users)
                 {
-                    <option value="@user.Id">UserName</option>
+                    <option value="@user.Id">@user.FirstName @user.LastName (@user.Email)</option>
                 }
             }
         </select>
+
         <span asp-validation-for="AssignedToId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Priority" class="form-label"></label>
+        <select asp-for="Priority" class="form-select">
+            <option value="">-- Select Priority --</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+        <span asp-validation-for="Priority" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
