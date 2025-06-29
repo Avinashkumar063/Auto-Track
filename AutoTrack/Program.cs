@@ -30,6 +30,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 
 builder.Services.AddSignalR();
+builder.Services.AddTransient<AutoTrack.Services.EmailSender>();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -58,7 +59,8 @@ app.MapHub<AutoTrack.Hubs.TaskHub>("/taskHub");
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Tasks}/{action=Dashboard}/{id?}");
+
 
 
 

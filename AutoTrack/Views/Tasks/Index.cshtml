@@ -9,10 +9,8 @@
 
 <h2>Tasks</h2>
 
-@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-{
-    <a asp-action="Create" class="btn btn-primary mb-3">Create Task</a>
-}
+<a asp-action="Create" class="btn btn-primary mb-3">Create Task</a>
+
 
 <form method="get" class="row g-3 mb-3">
     <div class="col-md-3">

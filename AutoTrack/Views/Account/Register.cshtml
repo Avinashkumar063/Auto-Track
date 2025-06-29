@@ -1,46 +1,97 @@
 @model AutoTrack.ViewModels.RegisterViewModel
 @{
     Layout = "_AuthLayout";
-    ViewData["Title"] = "Sign Up";
+    ViewData["Title"] = "Register";
 }
-<div class="auth-form-container">
-    <div class="auth-form-title">Sign Up</div>
-    <div class="auth-form-subtitle">Please fill your information below</div>
-    <form asp-action="Register" method="post">
+<div class="auth-form-container shadow-lg rounded-4 p-4 bg-white">
+    <div class="auth-form-title mb-2">Register</div>
+    <div class="auth-form-subtitle mb-4">Create your account</div>
+    <form asp-action="Register" method="post" id="registerForm" autocomplete="off">
+        <div asp-validation-summary="All" class="text-danger small"></div>
         <div class="mb-3">
-            <label asp-for="FirstName" class="form-label"></label>
-            <input asp-for="FirstName" class="form-control" placeholder="First Name" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
+            <label asp-for="FirstName" class="form-label fw-semibold"></label>
+            <input asp-for="FirstName" class="form-control form-control-lg" placeholder="First Name" />
+            <span asp-validation-for="FirstName" class="text-danger small"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="LastName" class="form-label"></label>
-            <input asp-for="LastName" class="form-control" placeholder="Last Name" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
+            <label asp-for="LastName" class="form-label fw-semibold"></label>
+            <input asp-for="LastName" class="form-control form-control-lg" placeholder="Last Name" />
+            <span asp-validation-for="LastName" class="text-danger small"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" placeholder="Email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <label asp-for="Password" class="form-label fw-semibold"></label>
+            <input asp-for="Password" class="form-control form-control-lg" placeholder="Password" type="password" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" placeholder="Password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
+            <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
+            <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Confirm Password" type="password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="ConfirmPassword" class="form-label"></label>
-            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            <label asp-for="Email" class="form-label fw-semibold"></label>
+            <input asp-for="Email" class="form-control form-control-lg" placeholder="Email" id="emailInput" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+            <button type="button" id="sendOtpBtn" class="btn btn-secondary mt-2">Send OTP</button>
+            <span id="otpStatus" class="text-success small"></span>
         </div>
-        <button type="submit" class="btn btn-auth w-100">Next</button>
+        <div class="mb-3" id="otpDiv" style="display:none;">
+            <div class="input-group">
+                <input type="text" id="otpInput" name="Otp" class="form-control form-control-lg" placeholder="Enter OTP" />
+                <button type="button" id="verifyOtpBtn" class="btn btn-primary">Verify OTP</button>
+            </div>
+            <span id="otpVerifyStatus" class="text-success small"></span>
+        </div>
+        <button type="submit" class="btn-auth">Register</button>
     </form>
     <div class="mt-4 text-center">
         <span>Already have an account?</span>
-        <a asp-action="Login" class="auth-link">Login to your account</a>
+        <a asp-action="Login" class="auth-link">Login</a>
     </div>
 </div>
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('sendOtpBtn').onclick = function () {
+            var email = document.getElementById('emailInput').value;
+            document.getElementById('otpStatus').innerText = '';
+            document.getElementById('otpVerifyStatus').innerText = '';
+            fetch('/Account/SendOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('otpDiv').style.display = 'block';
+                    document.getElementById('otpStatus').innerText = 'OTP sent to your email.';
+                    document.getElementById('sendOtpBtn').disabled = true;
+                } else {
+                    document.getElementById('otpStatus').innerText = data.message;
+                }
+            });
+        };
+
+        document.getElementById('verifyOtpBtn').onclick = function () {
+            var email = document.getElementById('emailInput').value;
+            var otp = document.getElementById('otpInput').value;
+            document.getElementById('otpVerifyStatus').innerText = '';
+            fetch('/Account/VerifyOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, otp: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('otpVerifyStatus').innerText = 'OTP verified. You can now register.';
+                    document.getElementById('otpInput').disabled = true;
+                    document.getElementById('verifyOtpBtn').disabled = true;
+                } else {
+                    document.getElementById('otpVerifyStatus').innerText = 'Invalid OTP.';
+                }
+            });
+        };
+    </script>
 }

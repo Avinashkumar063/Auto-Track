@@ -1,8 +1,11 @@
 using AutoTrack.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using AutoTrack.Services;
 using AutoTrack.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace AutoTrack.Controllers
 {
@@ -11,12 +14,18 @@ namespace AutoTrack.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly EmailSender _emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
+            EmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -30,8 +39,22 @@ namespace AutoTrack.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            if (TempData["EmailVerified"] as bool? != true || model.Email != (TempData["VerifiedEmail"] as string))
+            {
+                ModelState.AddModelError("", "Email not verified.");
+                return View(model);
+            }
+
             if (ModelState.IsValid)
             {
+                // Check if email is already registered
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Email", "Email is already registered.");
+                    return View(model);
+                }
+
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
@@ -39,73 +62,78 @@ namespace AutoTrack.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName
                 };
-
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Always assign the default role "Employee"
-                    if (await _roleManager.RoleExistsAsync("Employee"))
-                    {
-                        await _userManager.AddToRoleAsync(user, "Employee");
-                    }
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    // Assign default role
+                    await _userManager.AddToRoleAsync(user, "Employee");
+                    return RedirectToAction("Login");
                 }
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("", error.Description);
                 }
             }
             return View(model);
         }
 
-        [HttpGet]
+
+        [HttpPost]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> SendOtp([FromBody] VerifyOtpViewModel model)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            if (string.IsNullOrEmpty(model.Email) || !new EmailAddressAttribute().IsValid(model.Email))
+                return Json(new { success = false, message = "Invalid email." });
+
+            var otp = new Random().Next(100000, 999999).ToString();
+            TempData["RegisterOtp"] = otp;
+            TempData["RegisterEmail"] = model.Email;
+
+            await _emailSender.SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP code is: {otp}");
+
+            return Json(new { success = true });
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public IActionResult VerifyOtp([FromBody] VerifyOtpViewModel model)
         {
-            ViewData["ReturnUrl"] = returnUrl;
+            var otp = TempData["RegisterOtp"] as string;
+            var email = TempData["RegisterEmail"] as string;
+
+            if (model.Email == email && model.Otp == otp)
+            {
+                TempData["EmailVerified"] = true;
+                TempData["VerifiedEmail"] = email;
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, message = "Invalid OTP." });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null)
-                {
-                    ModelState.AddModelError(nameof(model.Email), "Email is not registered.");
-                    return View(model);
-                }
-
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) && !returnUrl.Contains("/Account/Login"))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    if (roles.Contains("Admin"))
-                        return RedirectToAction("Dashboard", "Tasks");
-                    else if (roles.Contains("User"))
-                        return RedirectToAction("Dashboard", "Tasks");
-                    // Add more role-based redirects as needed
+                    // Redirect to dashboard or tasks page after login
                     return RedirectToAction("Dashboard", "Tasks");
                 }
-                else
-                {
-                    ModelState.AddModelError(nameof(model.Password), "Password is incorrect.");
-                }
+                ModelState.AddModelError("", "Invalid login attempt.");
             }
             return View(model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

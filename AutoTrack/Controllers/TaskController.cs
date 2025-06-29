@@ -166,11 +166,16 @@ namespace AutoTrack.Controllers
         public async Task<IActionResult> Dashboard()
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var user = await _context.Users.FindAsync(userId);
             var tasks = await _context.TaskItems
                 .Include(t => t.AssignedTo)
                 .Where(t => t.AssignedToId == userId)
                 .ToListAsync();
+
+            // Pass the user's first name to the view
+            ViewBag.UserName = user != null ? user.FirstName : "User";
             return View(tasks);
         }
+
     }
 }

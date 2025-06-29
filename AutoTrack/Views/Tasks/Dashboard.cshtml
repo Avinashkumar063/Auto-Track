@@ -1,9 +1,10 @@
 @model IEnumerable<AutoTrack.Models.TaskItem>
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = $"{ViewBag.UserName}'s Task Dashboard";
 }
 
-<h2>All Tasks (Dashboard)</h2>
+<h2>@ViewData["Title"]</h2>
+
 
 <table class="table table-striped">
     <thead>

@@ -11,30 +11,48 @@
     <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
-        /* Overlap the form slightly over the image for a modern look */
-        @@media (min-width: 768px) {
-            .auth-form-overlap
+        .auth-fixed-left {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50vw;
+            height: 100vh;
+            background: url('/images/auth-side.png') center center no-repeat;
+            background-size: cover;
+            z-index: 1;
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            /* Optional: add a subtle box-shadow for effect */
+            box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+        }
+
+        .auth-form-scroll {
+            margin-left: 50vw;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            z-index: 2;
+        }
+        @@media (max-width: 767.98px) {
+            .auth-fixed-left
 
         {
-            margin-left: -140px;
-            z-index: 2;
+            display: none;
+        }
+
+        .auth-form-scroll {
+            margin-left: 0;
         }
 
         }
     </style>
 </head>
-<body class="bg-light">
-    <div class="container-fluid min-vh-100 d-flex align-items-center">
-        <div class="row w-100" style="min-height: 80vh;">
-            <!-- Left: Image -->
-            <div class="col-md-6 d-none d-md-flex align-items-center justify-content-start p-0">
-                <div class="auth-left"></div>
-            </div>
-            <!-- Right: Form -->
-            <div class="col-md-6 d-flex align-items-center justify-content-end auth-form-overlap">
-                @RenderBody()
-            </div>
-        </div>
+<body>
+    <div class="auth-fixed-left"></div>
+    <div class="auth-form-scroll">
+        @RenderBody()
     </div>
     @RenderSection("Scripts", required: false)
 </body>
