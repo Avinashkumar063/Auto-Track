@@ -1,48 +1,112 @@
 @model IEnumerable<AutoTrack.Models.TaskItem>
 @{
-    ViewData["Title"] = $"{ViewBag.UserName}'s Task Dashboard";
+    ViewData["Title"] = "My Completed Tasks";
+    var userName = ViewBag.UserName as string;
+    var period = ViewBag.Period as string ?? "week";
+    var titleFilter = ViewBag.TitleFilter as string ?? "";
+    var statusFilter = ViewBag.StatusFilter as string ?? "";
+    var priorityFilter = ViewBag.PriorityFilter as string ?? "";
+    var assignedToFilter = ViewBag.AssignedToFilter as string ?? "";
+    var fromDate = ViewBag.FromDate as string ?? "";
+    var toDate = ViewBag.ToDate as string ?? "";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>@userName's Tasks</h2>
 
+<a asp-action="CalendarFeed" class="btn btn-outline-primary">Download My Calendar Feed</a>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Priority</th>
-            <th>Assigned To</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th>CreatedBy</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var task in Model)
-        {
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-2">
+        <select name="period" class="form-select">
+            <option value="week" selected="@(period == "week" ? "selected" : null)">Past Week</option>
+            <option value="month" selected="@(period == "month" ? "selected" : null)">Past Month</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="title" value="@titleFilter" class="form-control" placeholder="Search by Title" />
+    </div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="Pending" selected="@(statusFilter == "Pending" ? "selected" : null)">Pending</option>
+            <option value="InProgress" selected="@(statusFilter == "InProgress" ? "selected" : null)">In Progress</option>
+            <option value="Completed" selected="@(statusFilter == "Completed" ? "selected" : null)">Completed</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="priority" class="form-select">
+            <option value="">All Priorities</option>
+            <option value="Low" selected="@(priorityFilter == "Low" ? "selected" : null)">Low</option>
+            <option value="Medium" selected="@(priorityFilter == "Medium" ? "selected" : null)">Medium</option>
+            <option value="High" selected="@(priorityFilter == "High" ? "selected" : null)">High</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="assignedTo" value="@assignedToFilter" class="form-control" placeholder="Assigned To (Name or Email)" />
+    </div>
+    <div class="col-md-1">
+        <input type="date" name="from" value="@fromDate" class="form-control" />
+    </div>
+    <div class="col-md-1">
+        <input type="date" name="to" value="@toDate" class="form-control" />
+    </div>
+    <div class="col-md-12 mt-2">
+        <button type="submit" class="btn btn-secondary">Apply Filters</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No tasks found for the selected filters.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@task.Title</td>
-                <td>@task.Description</td>
-                <td>@task.Priority</td>
-                <td>
-                    @if (task.AssignedTo != null)
-                    {
-                        @($"{task.AssignedTo.FirstName} {task.AssignedTo.LastName} ({task.AssignedTo.Email})")
-                    }
-                    else
-                    {
-                        <span class="text-muted">Unassigned</span>
-                    }
-                </td>
-                <td>@task.DueDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge bg-@(task.Status == "Completed" ? "success" : task.Status == "InProgress" ? "warning" : "secondary")">
-                        @task.Status
-                    </span>
-                </td>
-                <td>@task.CreatedBy</td>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Assigned To</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
+                <th>CompletedAt</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.Description</td>
+                    <td>@task.Priority</td>
+                    <td>
+                        @if (task.AssignedTo != null)
+                        {
+                            @($"{task.AssignedTo.FirstName} {task.AssignedTo.LastName} ({task.AssignedTo.Email})")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Unassigned</span>
+                        }
+                    </td>
+                    <td>@task.DueDate.ToShortDateString()</td>
+                    <td>
+                        <span class="badge bg-@(task.Status == "Completed" ? "success" : task.Status == "InProgress" ? "warning" : "secondary")">
+                            @task.Status
+                        </span>
+                    </td>
+                    <td>@task.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>@(task.CompletedAt?.ToLocalTime().ToString("g") ?? "-")</td>
+                    <td>
+                        <a asp-action="DownloadCalendarEvent" asp-route-id="@task.Id" class="btn btn-sm btn-outline-secondary">
+                            Add to Calendar
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

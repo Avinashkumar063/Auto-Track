@@ -31,7 +31,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddSignalR();
 builder.Services.AddTransient<AutoTrack.Services.EmailSender>();
-
+builder.Services.AddTransient<AutoTrack.Services.EmailService>();
+builder.Services.AddHostedService<AutoTrack.Services.TaskDeadlineAlertService>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

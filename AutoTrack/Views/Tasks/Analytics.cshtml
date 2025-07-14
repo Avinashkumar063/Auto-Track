@@ -1,14 +1,15 @@
-﻿<canvas id="taskStatusChart"></canvas>
-<script>
-    var ctx = document.getElementById('taskStatusChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: @Html.Raw(Json.Serialize(ViewBag.StatusLabels)),
-            datasets: [{
-                data: @Html.Raw(Json.Serialize(ViewBag.StatusCounts)),
-                backgroundColor: ['#28a745', '#ffc107', '#6c757d']
-            }]
-        }
-    });
-</script>
+﻿@{
+    ViewData["Title"] = "Task Analytics";
+}
+
+<h2>Task Status Overview</h2>
+<canvas id="taskStatusChart"></canvas>
+
+<h2 class="mt-5">Completed Tasks Per Day</h2>
+<canvas id="completedTasksChart"></canvas>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title

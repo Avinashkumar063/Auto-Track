@@ -25,6 +25,7 @@ namespace AutoTrack.Models
 
         // Add this property:
         public string? CreatedBy { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 
 }
