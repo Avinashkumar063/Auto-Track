@@ -11,7 +11,6 @@
 
 <a asp-action="Create" class="btn btn-primary mb-3">Create Task</a>
 
-
 <form method="get" class="row g-3 mb-3">
     <div class="col-md-3">
         <input type="text" name="title" value="@titleFilter" class="form-control" placeholder="Search by Title" />
@@ -23,7 +22,6 @@
             <option value="InProgress" selected="@(statusFilter == "InProgress" ? "selected" : null)">In Progress</option>
             <option value="Completed" selected="@(statusFilter == "Completed" ? "selected" : null)">Completed</option>
         </select>
-
     </div>
     <div class="col-md-2">
         <select name="priority" class="form-select">
@@ -32,7 +30,6 @@
             <option value="Medium" selected="@(priorityFilter == "Medium" ? "selected" : null)">Medium</option>
             <option value="High" selected="@(priorityFilter == "High" ? "selected" : null)">High</option>
         </select>
-
     </div>
     <div class="col-md-3">
         <input type="text" name="assignedTo" value="@assignedToFilter" class="form-control" placeholder="Assigned To (Name or Email)" />
@@ -78,7 +75,6 @@
                         <span class="text-muted">Unassigned</span>
                     }
                 </td>
-                
                 <td>@task.DueDate.ToShortDateString()</td>
                 <td>
                     <span class="badge bg-@(task.Status == "Completed" ? "success" : task.Status == "InProgress" ? "warning" : "secondary")">
@@ -87,13 +83,26 @@
                 </td>
                 <td>@task.CreatedBy</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">Edit</a>
-                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-                    {
-                        <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-danger">Delete</a>
-                    }
+                    <div class="d-flex align-items-center gap-2">
+                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-link p-0" title="Edit">
+                            <!-- Minimal pencil icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path d="M12.3 2.3a1 1 0 0 1 1.4 1.4l-8.5 8.5-2.2.7.7-2.2 8.6-8.6z" />
+                            </svg>
+                        </a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-link p-0 text-danger" title="Delete">
+                                <!-- Minimal trash/bin icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <rect x="2" y="6" width="12" height="8" rx="2" />
+                                    <path d="M5 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                    <line x1="8" y1="9" x2="8" y2="13" />
+                                </svg>
+                            </a>
+                        }
+                    </div>
                 </td>
-
             </tr>
         }
     </tbody>

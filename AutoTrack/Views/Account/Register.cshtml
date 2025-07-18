@@ -3,36 +3,40 @@
     Layout = "_AuthLayout";
     ViewData["Title"] = "Register";
 }
-<div class="auth-form-container shadow-lg rounded-4 p-4 bg-white">
-    <div class="auth-form-title mb-2">Register</div>
-    <div class="auth-form-subtitle mb-4">Create your account</div>
+<div class="auth-form-container shadow-lg rounded-4 p-4 bg-white" style="max-width: 500px; margin: auto;">
+    <div class="auth-form-title mb-2 text-center fw-bold fs-2 text-primary">Register</div>
+    <div class="auth-form-subtitle mb-4 text-center text-muted">Create your account</div>
     <form asp-action="Register" method="post" id="registerForm" autocomplete="off">
-        <div asp-validation-summary="All" class="text-danger small"></div>
-        <div class="mb-3">
-            <label asp-for="FirstName" class="form-label fw-semibold"></label>
-            <input asp-for="FirstName" class="form-control form-control-lg" placeholder="First Name" />
-            <span asp-validation-for="FirstName" class="text-danger small"></span>
+        <div asp-validation-summary="All" class="text-danger small mb-2"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="FirstName" class="form-label fw-semibold"></label>
+                <input asp-for="FirstName" class="form-control form-control-lg" placeholder="First Name" />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LastName" class="form-label fw-semibold"></label>
+                <input asp-for="LastName" class="form-control form-control-lg" placeholder="Last Name" />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
+            </div>
         </div>
-        <div class="mb-3">
-            <label asp-for="LastName" class="form-label fw-semibold"></label>
-            <input asp-for="LastName" class="form-control form-control-lg" placeholder="Last Name" />
-            <span asp-validation-for="LastName" class="text-danger small"></span>
+        <div class="row g-3 mt-2">
+            <div class="col-md-6">
+                <label asp-for="Password" class="form-label fw-semibold"></label>
+                <input asp-for="Password" class="form-control form-control-lg" placeholder="Password" type="password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
+                <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Confirm Password" type="password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
         </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label fw-semibold"></label>
-            <input asp-for="Password" class="form-control form-control-lg" placeholder="Password" type="password" />
-            <span asp-validation-for="Password" class="text-danger small"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
-            <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Confirm Password" type="password" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-        </div>
-        <div class="mb-3">
+        <div class="mb-3 mt-2">
             <label asp-for="Email" class="form-label fw-semibold"></label>
             <input asp-for="Email" class="form-control form-control-lg" placeholder="Email" id="emailInput" />
             <span asp-validation-for="Email" class="text-danger small"></span>
-            <button type="button" id="sendOtpBtn" class="btn btn-secondary mt-2">Send OTP</button>
+            <button type="button" id="sendOtpBtn" class="btn btn-outline-secondary mt-2">Send OTP</button>
             <span id="otpStatus" class="text-success small"></span>
         </div>
         <div class="mb-3" id="otpDiv" style="display:none;">
@@ -42,15 +46,14 @@
             </div>
             <span id="otpVerifyStatus" class="text-success small"></span>
         </div>
-        <button type="submit" class="btn-auth">Register</button>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Register</button>
     </form>
     <div class="mt-4 text-center">
-        <span>Already have an account?</span>
-        <a asp-action="Login" class="auth-link">Login</a>
+        <span class="text-muted">Already have an account?</span>
+        <a asp-action="Login" class="auth-link fw-semibold text-primary ms-1">Login</a>
     </div>
 </div>
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <script>
         document.getElementById('sendOtpBtn').onclick = function () {
             var email = document.getElementById('emailInput').value;

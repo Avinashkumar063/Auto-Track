@@ -3,35 +3,50 @@
     var allRoles = ViewBag.AllRoles as List<string>;
 }
 
-<h2>User Management</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Current Role</th>
-            <th>Change Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Email</td>
-                <td>@user.CurrentRole</td>
-                <td>
-                    <form asp-action="AssignRole" method="post" style="display:inline;">
-                        <input type="hidden" name="userId" value="@user.UserId" />
-                        <select name="role" class="form-select form-select-sm d-inline w-auto">
-                            <option value="@user.CurrentRole" selected>@user.CurrentRole</option>
-                            @foreach (var role in allRoles.Where(r => r != user.CurrentRole))
-                            {
-                                <option value="@role">@role</option>
-                            }
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-primary">Assign</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary mb-0">User Management</h2>
+        <span class="badge bg-info text-dark fs-6">Total Users: @Model.Count()</span>
+    </div>
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th>Change Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@user.FirstName</td>
+                            <td class="fw-semibold">@user.LastName</td>
+                            <td class="fw-semibold">@user.Email</td>
+                            <td>
+                                <span class="badge bg-secondary">@user.CurrentRole</span>
+                            </td>
+                            <td>
+                                <form asp-action="AssignRole" method="post" class="d-flex gap-2 align-items-center">
+                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                    <select name="role" class="form-select form-select-sm w-auto">
+                                        <option value="@user.CurrentRole" selected>@user.CurrentRole</option>
+                                        @foreach (var role in allRoles.Where(r => r != user.CurrentRole))
+                                        {
+                                            <option value="@role">@role</option>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary px-3">Assign</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

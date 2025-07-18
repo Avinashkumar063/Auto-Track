@@ -22,21 +22,23 @@ public class AdminController : Controller
     public async Task<IActionResult> Users()
     {
         var users = _userManager.Users.ToList();
-        var userWithRoles = new List<UserWithRoleViewModel>();
+        var userViewModels = new List<UserWithRoleViewModel>();
 
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            userWithRoles.Add(new UserWithRoleViewModel
+            userViewModels.Add(new UserWithRoleViewModel
             {
                 UserId = user.Id,
                 Email = user.Email,
-                CurrentRole = roles.FirstOrDefault() ?? "Employee"
+                CurrentRole = roles.FirstOrDefault() ?? "Employee",
+                FirstName = user.FirstName,
+                LastName = user.LastName
             });
         }
 
         ViewBag.AllRoles = _roleManager.Roles.Select(r => r.Name).ToList();
-        return View(userWithRoles);
+        return View(userViewModels);
     }
 
     [HttpPost]
